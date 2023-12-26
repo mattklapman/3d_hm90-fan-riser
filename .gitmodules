@@ -1,0 +1,3 @@
+[submodule "Chamfers-for-OpenSCAD"]
+	path = Chamfers-for-OpenSCAD
+	url = https://github.com/mattklapman/Chamfers-for-OpenSCAD.git
