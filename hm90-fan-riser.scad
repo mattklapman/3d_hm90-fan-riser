@@ -73,7 +73,7 @@ module fanSupport()
         {
             translate([0, -hm90Length/4, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cubeRadial(hm90Width, hm90Length/2, fanHeight + wallThicknessMin, standRadial, 1);
             // clean up the inner rounded corners
-            translate([0, -hm90Length/8, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cube([hm90Width, hm90Length/4, fanHeight + wallThicknessMin], standRadial, center=true);
+            translate([0, -hm90Length/8, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cube([hm90Width, hm90Length/4, fanHeight + wallThicknessMin], center=true);
         }
         union()
         {
