@@ -1,14 +1,36 @@
-// HM90 Cooler Stand: holds two fans (40mm x 25mm) to cool the lower half
-// 2023 Matt Klapman
-
+// HM90 Fan Riser: holds two fans (40mm x 25mm) to cool the lower inside of an HM90 Mini PC
 // OpenSCAD units are millimeters
 
-$fn=60; // number of resolved facets on curves
+/****************
+BSD 2-Clause License
+
+Copyright (c) 2023, mattklapman
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*****************/
 
 include <Chamfers-for-OpenSCAD/Chamfer.scad>;
 
-
-wallThickness = 3;
+wallThickness = 3; // used for the tray bottom; thick enough to have an internal truss to reduce warping over time (15% infill)
 wallThicknessMin = 1.5;
 
 clearance = 0.3; // allow some space as 3D printing isn't perfect
@@ -37,6 +59,7 @@ standRadial = hm90Radial;
 hm90shelf = 3.5 + 1 + 2.5; // depth of hm90 into the base
 bottomAirGap = 7; // height off of the desk to allow airflow
 
+$fn=60; // number of resolved facets on curves
 renderHelp = 0.001; // used during development to correct visual artifacts in OpenSCAD (OK to print with this)
 
 module tray()
@@ -48,7 +71,7 @@ module tray()
         union()
         {
             // tray inset
-            translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight + hm90Height/2]) cubeChamferRoundTop(hm90Width, hm90Length, hm90Height, hm90Radial);
+            translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight + hm90Height/2]) cubeChamferRoundTopBot(hm90Width, hm90Length, hm90Height, hm90Radial);
             
             // vent(s)
             translate([0, 0, 0.014]) fans(); // I do not know why there is a 0.014mm error here
@@ -138,7 +161,9 @@ module fans()
     translate([+wallThicknessMin/2 + fanWidth/2, -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThicknessMin + fanHeight/2]) cubeRadial(fanWidth + clearance, fanLength + clearance, fanHeight + 2*renderHelp, 2, 1);
 }
 
-// main unit
+/****************
+// Main
+*****************/
 // difference is to create the fan cable rounting
 difference()
 {
@@ -165,16 +190,23 @@ difference()
         translate([-(fanCableOffset + wallThicknessMin/2), -hm90Length/2 + hm90VentOffset + hm90VentLength - wallThicknessMin - 4*clearance, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
     }
 }
+
+// uncomment to see the fan outline in the model
 //color("blue") fans();
+
+// uncomment to see the planes where slicing should occur
 echo("Bambu/Prusa Slicing Instructions:");
 echo("1. Slice off feet at height: ", bottomAirGap);
 //color([0.5, 0.5, 0.5, 0.5]) translate([0, 0, bottomAirGap]) cube([2*hm90Width, 2*hm90Length, renderHelp], center=true);
 echo("2. Slice off tray at height: ", wallThicknessMin + fanHeight - wallThickness);
 //color([0.5, 0.5, 0.5, 0.5]) translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight - wallThickness]) cube([2*hm90Width, 2*hm90Length, renderHelp], center=true);
 
+/****************
+// Primatives
+*****************/
 
-
-module cubeChamferRoundTop(sizeX, sizeY, sizeZ, chamferRadius)
+// cube chamfered with round mitered corners on the top and bottom
+module cubeChamferRoundTopBot(sizeX, sizeY, sizeZ, chamferRadius)
 {
     difference()
     {
@@ -201,6 +233,7 @@ module cubeChamferRoundTop(sizeX, sizeY, sizeZ, chamferRadius)
             rotate([180, 0, 90]) cornerChamferRoundCut(chamferRadius);
     }
 }
+// helper for above cubeChamferRoundTopBot()
 module cornerChamferRoundCut(chamferRadius)
 {
     // tool to cut a rounded corner between 2 angled chamfers
@@ -212,10 +245,6 @@ module cornerChamferRoundCut(chamferRadius)
             cylinder(h=chamferRadius, r1=chamferRadius, r2=0);
     }
 }
-
-
-
-
 
 
 // Subroutine for cube with radial corners
