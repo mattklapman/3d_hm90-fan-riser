@@ -5,6 +5,8 @@ The Minisforum HM90 computer has a major flaw with cooling where the lower half 
 
 At the time of this creation, commercial cooling units are mostly designed for laptops typically with fans moving air in the same direction.
 
+![hm90fan-riser draft 3D print photo with fans and without HM90 Mini PC](/var/home/mattk/Documents/projects/@3Dprinting/hm90-fan-riser/hm90-fan-riser-draftprint.jpg)
+
 ![hm90-fan-riser OpenSCAD render](hm90-fan-riser-openscad.png)
 
 ## Parts Procured
@@ -22,7 +24,7 @@ At the time of this creation, commercial cooling units are mostly designed for l
 * Remove screws and fan grates.
 * Feed through the USB wire and control switch through the top center cutout.
 * Place fans in opposite directions to maximize air flow throught the hm90 chassis.
-* Place HM90 on top.
+* Place HM90 on top (there should be a minimal air gap to maximize the air flow through the HM90 vent).
 * Plug in the fans to a USB adapter (or the computer if the computer's power is not overly taxed).
 
 ## 3D Printing
@@ -37,4 +39,10 @@ Settings used in development:
 The printing parameters should be flexible for change and provide good results.
 
 ## Final Comments
-There are room for improvements, but you know... 80/20.
+The hm90-fan-riser cooled my NVMe M.2 flash memory by 16°C with the fans high!
+
+There is room for improvement (cable management, USB drive holder, etc.), but you know... 80/20.
+
+Waiting for 3D prints is the new waiting for downloads over a 56K baud modem. Just saying.
+
+![hm90-fan-riser draft 3D print photo with HM90 Mini PC](hm-90-fan-riser-draftprint-with-hm90.jpg)
