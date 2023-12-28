@@ -11,7 +11,7 @@ include <Chamfers-for-OpenSCAD/Chamfer.scad>;
 wallThickness = 3;
 wallThicknessMin = 1.5;
 
-clearance = 0.5; // allow some space as 3D printing isn't perfect
+clearance = 0.3; // allow some space as 3D printing isn't perfect
 
 // from a horizontal view looking at the front
 hm90Width = 149.5 + clearance;  // measurement left to right
@@ -43,14 +43,15 @@ module tray()
 {
     difference()
     {
-        translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight + hm90shelf/2 - wallThickness]) cubeRadial(hm90Width, hm90Length, hm90shelf + wallThickness, standRadial, 1);
+        // tray
+        translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight - wallThickness + (hm90shelf + wallThickness)/2]) cubeRadial(hm90Width, hm90Length, (hm90shelf + wallThickness), standRadial, 1);
         union()
         {
+            // tray inset
             translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight + hm90Height/2]) cubeChamferRoundTop(hm90Width, hm90Length, hm90Height, hm90Radial);
-            echo("wallThickness - hm90shelf", wallThickness - hm90shelf);
             
             // vent(s)
-            translate([0, 0, 0.15]) fans(); // I do not know why there is a 0.15mm error here
+            translate([0, 0, 0.014]) fans(); // I do not know why there is a 0.014mm error here
             fans();
             
         }
@@ -62,8 +63,8 @@ module fanSupport()
     // outside skirt
     difference()
         {
-            translate([0, 0, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cubeRadial(hm90Width, hm90Length, fanHeight + wallThicknessMin, standRadial, 1);
-            translate([0, 0, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cubeRadial(hm90Width - 2*wallThickness, hm90Length - 2*wallThickness, fanHeight + wallThicknessMin + 2*renderHelp, standRadial, 1);
+            translate([0, 0, bottomAirGap + (fanHeight + wallThicknessMin - wallThickness)/2]) cubeRadial(hm90Width, hm90Length, fanHeight + wallThicknessMin - wallThickness, standRadial, 1);
+            translate([0, 0, bottomAirGap + (fanHeight + wallThicknessMin - wallThickness)/2]) cubeRadial(hm90Width - 2*wallThickness, hm90Length - 2*wallThickness, fanHeight + wallThicknessMin - wallThickness + 2*renderHelp, standRadial, 1);
         }
     
     // fan cavity
@@ -71,9 +72,9 @@ module fanSupport()
     {
         union()
         {
-            translate([0, -hm90Length/4, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cubeRadial(hm90Width, hm90Length/2, fanHeight + wallThicknessMin, standRadial, 1);
+            translate([0, -hm90Length/4, bottomAirGap + (fanHeight + wallThicknessMin - wallThickness)/2]) cubeRadial(hm90Width, hm90Length/2, fanHeight + wallThicknessMin - wallThickness, standRadial, 1);
             // clean up the inner rounded corners
-            translate([0, -hm90Length/8, bottomAirGap + (fanHeight + wallThicknessMin)/2]) cube([hm90Width, hm90Length/4, fanHeight + wallThicknessMin], center=true);
+            translate([0, -hm90Length/8, bottomAirGap + (fanHeight + wallThicknessMin - wallThickness)/2]) cube([hm90Width, hm90Length/4, fanHeight + wallThicknessMin - wallThickness], center=true);
         }
         union()
         {
@@ -115,119 +116,20 @@ module fanMountCorners()
     }
 }
 
-module fanGrates()
-{
-    // fan grates
-    jointDiameter = 8;
-
-    // fan center
-    translate([-(wallThicknessMin/2 + fanWidth/2), -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter);
-    hull()
-    {
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-
-    // left fan
-    hull()
-    {
-        //corner
-        translate([-(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([-(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([-(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        //corner
-        translate([-(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([-(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([-(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-
-    // right fan
-    // fan center
-    translate([(wallThicknessMin/2 + fanWidth/2), -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter);
-    hull()
-    {
-        //corner
-        translate([(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        //corner
-        translate([(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 + fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-    hull()
-    {
-        //corner
-        translate([(wallThicknessMin/2 + fanWidth), -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-        // middle
-        translate([0, -hm90Length/2 + hm90VentOffset + hm90VentLength/2 - fanLength/2, bottomAirGap + wallThicknessMin]) cylinder(h=wallThicknessMin, d=jointDiameter/2);
-    }
-}
-
 module feet()
 {
     // corner cube stands
     standCornerWidth = (hm90Width - max(hm90VentWidth, 2*fanWidth + wallThicknessMin))/2;
     standCenterWidth = 2*(hm90Length/2 - hm90VentOffset - hm90VentLength);
     // center circle stand
-    // hull an X between
-    //hull()
-    {
-        translate([-(hm90Width/2 - standCornerWidth/2), -(hm90Width/2 - standCornerWidth/2), bottomAirGap/2])
-            cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap, standRadial, 1);
-        translate([-(hm90Width/2 - standCornerWidth/2), (hm90Width/2 - standCornerWidth/2), (bottomAirGap + fanHeight - wallThickness)/2])
-            cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap + fanHeight - wallThickness, standRadial, 1);
-        translate([(hm90Width/2 - standCornerWidth/2), -(hm90Width/2 - standCornerWidth/2), bottomAirGap/2])
-            cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap, standRadial, 1);
-        translate([(hm90Width/2 - standCornerWidth/2), (hm90Width/2 - standCornerWidth/2), (bottomAirGap + fanHeight - wallThickness)/2])
-            cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap + fanHeight - wallThickness, standRadial, 1);
-
-//        translate([0, 0, bottomAirGap/2])
-//            cubeRadial(standCenterWidth, standCenterWidth, bottomAirGap, 2, 1);
-    }
+    translate([-(hm90Width/2 - standCornerWidth/2), -(hm90Width/2 - standCornerWidth/2), bottomAirGap/2])
+        cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap, standRadial, 1);
+    translate([-(hm90Width/2 - standCornerWidth/2), (hm90Width/2 - standCornerWidth/2), (bottomAirGap + wallThicknessMin + fanHeight - wallThickness)/2])
+        cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap + wallThicknessMin + fanHeight - wallThickness, standRadial, 1);
+    translate([(hm90Width/2 - standCornerWidth/2), -(hm90Width/2 - standCornerWidth/2), bottomAirGap/2])
+        cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap, standRadial, 1);
+    translate([(hm90Width/2 - standCornerWidth/2), (hm90Width/2 - standCornerWidth/2), (bottomAirGap + wallThicknessMin + fanHeight - wallThickness)/2])
+        cubeRadial(standCornerWidth, standCornerWidth, bottomAirGap + wallThicknessMin + fanHeight - wallThickness, standRadial, 1);
 }
 
 module fans()
@@ -244,7 +146,6 @@ difference()
     {
         tray();
         color("red") fanSupport();
-        //fanGrates();
         fanMounts();
         feet();
     }
@@ -256,16 +157,20 @@ difference()
     hull()
     {
         translate([0, 0, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
-        translate([(fanCableOffset + wallThicknessMin/2), -hm90Length/2 + hm90VentOffset + hm90VentLength - wallThicknessMin - 2*clearance, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
+        translate([(fanCableOffset + wallThicknessMin/2), -hm90Length/2 + hm90VentOffset + hm90VentLength - wallThicknessMin - 4*clearance, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
     }
     hull()
     {
         translate([0, 0, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
-        translate([-(fanCableOffset + wallThicknessMin/2), -hm90Length/2 + hm90VentOffset + hm90VentLength - wallThicknessMin - 2*clearance, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
+        translate([-(fanCableOffset + wallThicknessMin/2), -hm90Length/2 + hm90VentOffset + hm90VentLength - wallThicknessMin - 4*clearance, zHeight]) cylinder(h=fanHeight/2 + fanCableDiameter + clearance, d=fanCableDiameter + clearance, center=true);
     }
 }
 //color("blue") fans();
-
+echo("Bambu/Prusa Slicing Instructions:");
+echo("1. Slice off feet at height: ", bottomAirGap);
+//color([0.5, 0.5, 0.5, 0.5]) translate([0, 0, bottomAirGap]) cube([2*hm90Width, 2*hm90Length, renderHelp], center=true);
+echo("2. Slice off tray at height: ", wallThicknessMin + fanHeight - wallThickness);
+//color([0.5, 0.5, 0.5, 0.5]) translate([0, 0, bottomAirGap + wallThicknessMin + fanHeight - wallThickness]) cube([2*hm90Width, 2*hm90Length, renderHelp], center=true);
 
 
 
