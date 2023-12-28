@@ -23,14 +23,16 @@ hm90VentWidth = 75.5;
 hm90VentLength = 45.3; // through holes are actually smaller
 hm90VentOffset = 17; // from front to start of length
 
-fanWidth = 40 + clearance;
-fanLength = 40 + clearance;
-fanHeight = 25; // does not include any wireframe around it
+fanWidth = 40;
+fanLength = 40;
+fanHeight = 10.3; // does not include any wireframe around it
+fanCableDiameter = 3;
+fanCableOffset = 6; // short distance of outside cable to edge of fan
 
 standRadial = hm90Radial;
 hm90shelf = 3.5 + 1 + 2.5; // depth of hm90 into the base
 trayHeight = hm90shelf + wallThickness;
-bottomAirGap = 10; // height off of the desk to allow airflow
+bottomAirGap = 7; // height off of the desk to allow airflow
 
 renderHelp = 0.001; // used during development to correct visual artifacts in OpenSCAD (OK to print with this)
 
@@ -73,6 +75,38 @@ module fanSupport()
             fans();
             translate([0, 0, -wallThicknessMin]) fans();
         }
+    }
+}
+
+module fanMounts()
+{
+    translate([-(wallThicknessMin/2 + fanWidth/2), -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThicknessMin + wallThicknessMin/2])
+        fanMountCorners();
+    translate([(wallThicknessMin/2 + fanWidth/2), -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThicknessMin + wallThicknessMin/2])
+        fanMountCorners();
+}
+module fanMountCorners()
+{
+    difference()
+    {
+        // corner shelves
+        linear_extrude(height=wallThicknessMin, center=true)
+            difference()
+            {
+                square([fanWidth + clearance, fanLength + clearance], center=true);
+                circle(d=38);
+            }
+        // holes
+        translate([(fanWidth/2 - 4), (fanLength/2 - 4), 0]) cylinder(h=2*wallThicknessMin, d=4, center=true);
+        translate([(fanWidth/2 - 4), -(fanLength/2 - 4), 0]) cylinder(h=2*wallThicknessMin, d=4, center=true);
+        translate([-(fanWidth/2 - 4), (fanLength/2 - 4), 0]) cylinder(h=2*wallThicknessMin, d=4, center=true);
+        translate([-(fanWidth/2 - 4), -(fanLength/2 - 4), 0]) cylinder(h=2*wallThicknessMin, d=4, center=true);
+
+        // countersinks
+        translate([(fanWidth/2 - 4), (fanLength/2 - 4), -wallThicknessMin/2]) cylinder(h=2, d1=6.6, d2=4, center=true);
+        translate([(fanWidth/2 - 4), -(fanLength/2 - 4), -wallThicknessMin/2]) cylinder(h=2, d1=6.6, d2=4, center=true);
+        translate([-(fanWidth/2 - 4), (fanLength/2 - 4), -wallThicknessMin/2]) cylinder(h=2, d1=6.6, d2=4, center=true);
+        translate([-(fanWidth/2 - 4), -(fanLength/2 - 4), -wallThicknessMin/2]) cylinder(h=2, d1=6.6, d2=4, center=true);        
     }
 }
 
@@ -193,15 +227,16 @@ module feet()
 
 module fans()
 {
-    translate([-wallThicknessMin/2 - fanWidth/2, -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThickness + fanHeight/2]) cubeRadial(fanWidth, fanLength, fanHeight + 2*renderHelp, 2, 1);
-    translate([+wallThicknessMin/2 + fanWidth/2, -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThickness + fanHeight/2]) cubeRadial(fanWidth, fanLength, fanHeight + 2*renderHelp, 2, 1);
+    translate([-wallThicknessMin/2 - fanWidth/2, -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThickness + fanHeight/2]) cubeRadial(fanWidth + clearance, fanLength + clearance, fanHeight + 2*renderHelp, 2, 1);
+    translate([+wallThicknessMin/2 + fanWidth/2, -hm90Length/2 + hm90VentOffset + hm90VentLength/2, bottomAirGap + wallThickness + fanHeight/2]) cubeRadial(fanWidth + clearance, fanLength + clearance, fanHeight + 2*renderHelp, 2, 1);
 }
 
 //translate([0, 0, bottomAirGap + fanHeight - wallThickness - hm90shelf]) tray();
 //translate([0, 0, bottomAirGap + fanHeight - wallThickness - hm90shelf]) tray();
 tray();
 color("red") fanSupport();
-fanGrates();
+//fanGrates();
+fanMounts();
 feet();
 //color("blue") fans();
 
